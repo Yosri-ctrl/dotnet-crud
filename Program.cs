@@ -26,7 +26,7 @@ List<Game> games = new List<Game>(){
         ImgURI = "",
     }
 };
-
+const string getGameName = "GetGame";
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -38,10 +38,18 @@ app.MapGet("/games/{id}", (int id) =>
     Game? game = games.Find(game => game.Id == id);
 
     if (game is null) {
-        return Results.NotFound("");
+        return Results.NotFound("Not found");
     }
 
     return Results.Ok(game);
+})
+.WithName(getGameName);
+
+app.MapPost("/games", (Game game) => {
+    game.Id = games.Max(game => game.Id) + 1;
+    games.Add(game);
+
+    return Results.CreatedAtRoute(getGameName, new {id = game.Id}, game);
 });
 
 app.Run();
