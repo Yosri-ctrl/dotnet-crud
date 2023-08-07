@@ -37,7 +37,8 @@ app.MapGet("/games/{id}", (int id) =>
 {
     Game? game = games.Find(game => game.Id == id);
 
-    if (game is null) {
+    if (game is null)
+    {
         return Results.NotFound("Not found");
     }
 
@@ -45,11 +46,30 @@ app.MapGet("/games/{id}", (int id) =>
 })
 .WithName(getGameName);
 
-app.MapPost("/games", (Game game) => {
+app.MapPost("/games", (Game game) =>
+{
     game.Id = games.Max(game => game.Id) + 1;
     games.Add(game);
 
-    return Results.CreatedAtRoute(getGameName, new {id = game.Id}, game);
+    return Results.CreatedAtRoute(getGameName, new { id = game.Id }, game);
+});
+
+app.MapPut("/games/{id}", (int id, Game updatedGame) =>
+{
+    Game? extingGame = games.Find(game => game.Id == id);
+
+    if (extingGame is null)
+    {
+        return Results.NotFound("Not found");
+    }
+
+    extingGame.Name = updatedGame.Name;
+    extingGame.Genre = updatedGame.Genre;
+    extingGame.Price = updatedGame.Price;
+    extingGame.RealeseDate = updatedGame.RealeseDate;
+    extingGame.ImgURI = updatedGame.ImgURI;
+
+    return Results.NoContent();
 });
 
 app.Run();
